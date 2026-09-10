@@ -35,7 +35,10 @@ targets:
   AugramX:
     type: application
     platform: iOS
-    sources: [Sources/App]
+    sources:
+      - path: Sources/App
+        excludes:
+          - "Info.plist"
     resources:
       - path: Resources
         excludes:
