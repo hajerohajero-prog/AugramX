@@ -22,29 +22,18 @@ if [ -z "$API_ID" ] || [ -z "$API_HASH" ]; then
     exit 1
 fi
 
-# 3. Check ExportOptions
-if [ ! -f "ExportOptions.plist" ]; then
-    if [ -f "ExportOptions.plist.example" ]; then
-        echo "ExportOptions.plist missing. Copying from ExportOptions.plist.example..."
-        cp ExportOptions.plist.example ExportOptions.plist
-    else
-        echo "FATAL ERROR: ExportOptions.plist.example not found."
-        exit 1
-    fi
-fi
-
-# 4. Generate Xcode Project
+# 3. Generate Xcode Project
 echo "Generating Xcode project using XcodeGen..."
 xcodegen generate
 
-# 5. Build Archive (Headless CI unsigned build)
-echo "Building archive..."
-xcodebuild clean archive \
+# 4. Clean and Build App for iOS (Unsigned headless CI build)
+echo "Building iOS App Binary..."
+xcodebuild clean build \
     -project AugramX.xcodeproj \
     -scheme AugramX \
     -configuration Release \
-    -archivePath build/AugramX.xcarchive \
-    -destination 'generic/platform=iOS' \
+    -sdk iphoneos \
+    -derivedDataPath build/DerivedData \
     API_ID="$API_ID" \
     API_HASH="$API_HASH" \
     CODE_SIGNING_ALLOWED=NO \
@@ -52,11 +41,22 @@ xcodebuild clean archive \
     CODE_SIGN_IDENTITY="" \
     CODE_SIGN_STYLE="Manual"
 
-# 6. Export IPA Artifact
-echo "Packaging IPA..."
+# 5. Locate built .app bundle
+APP_PATH=$(find build/DerivedData -name "AugramX.app" -type d | head -n 1)
+
+if [ -z "$APP_PATH" ]; then
+    echo "FATAL ERROR: AugramX.app bundle was not found after build."
+    exit 1
+fi
+
+echo "Found built app at: $APP_PATH"
+
+# 6. Package into IPA
+echo "Packaging .ipa artifact..."
 mkdir -p build/ipa/Payload
-cp -R build/AugramX.xcarchive/Products/Applications/AugramX.app build/ipa/Payload/
+cp -R "$APP_PATH" build/ipa/Payload/
 cd build/ipa
 zip -r AugramX.ipa Payload
 cd ../..
+
 echo "=== BUILD SUCCESSFUL: IPA artifact created at build/ipa/AugramX.ipa ==="
