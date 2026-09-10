@@ -7,14 +7,14 @@ import TDLibFramework
 import TDLib
 #endif
 
-protocol TDLibBridgeProtocol {
+public protocol TDLibBridgeProtocol {
     func send<T: Encodable>(request: T)
     var updatesStream: AsyncStream<Data> { get }
     func execute<T: Encodable, R: Decodable>(request: T) -> R?
     func close()
 }
 
-final class TDLibBridge: TDLibBridgeProtocol {
+public final class TDLibBridge: TDLibBridgeProtocol {
     private var client: UnsafeMutableRawPointer?
     private let receiveQueue = DispatchQueue(label: "com.augramx.tdlib.receive", qos: .userInitiated)
     private let sendQueue = DispatchQueue(label: "com.augramx.tdlib.send", qos: .userInitiated)
@@ -24,13 +24,13 @@ final class TDLibBridge: TDLibBridgeProtocol {
     private var streamContinuation: AsyncStream<Data>.Continuation?
     private var isRunning = true
     
-    lazy var updatesStream: AsyncStream<Data> = {
+    public lazy var updatesStream: AsyncStream<Data> = {
         AsyncStream { continuation in
             self.streamContinuation = continuation
         }
     }()
     
-    init() {
+    public init() {
         #if canImport(TDLibFramework) || canImport(TDLib)
         self.client = td_json_client_create()
         startPolling()
@@ -43,7 +43,7 @@ final class TDLibBridge: TDLibBridgeProtocol {
         close()
     }
     
-    func close() {
+    public func close() {
         isRunning = false
         #if canImport(TDLibFramework) || canImport(TDLib)
         if let client = client {
@@ -53,7 +53,7 @@ final class TDLibBridge: TDLibBridgeProtocol {
         #endif
     }
     
-    func send<T: Encodable>(request: T) {
+    public func send<T: Encodable>(request: T) {
         sendQueue.async { [weak self] in
             guard let self = self, let client = self.client else { return }
             guard let data = try? self.encoder.encode(request),
@@ -70,7 +70,7 @@ final class TDLibBridge: TDLibBridgeProtocol {
         }
     }
     
-    func execute<T: Encodable, R: Decodable>(request: T) -> R? {
+    public func execute<T: Encodable, R: Decodable>(request: T) -> R? {
         guard let data = try? encoder.encode(request),
               let jsonString = String(data: data, encoding: .utf8) else { return nil }
         
