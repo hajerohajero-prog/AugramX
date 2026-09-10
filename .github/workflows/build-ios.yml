@@ -23,6 +23,11 @@ jobs:
             echo "Downloading TDLib XCFramework from secret URL..."
             curl -L "${{ secrets.TDLIB_XCFRAMEWORK_URL }}" -o tdlib.zip
             unzip -q tdlib.zip -d Frameworks/
+            
+            # Handle potential nested folder extraction
+            if [ -d "Frameworks/TDLibFramework/TDLibFramework.xcframework" ]; then
+              mv Frameworks/TDLibFramework/TDLibFramework.xcframework Frameworks/
+            fi
           fi
           
           if [ ! -d "Frameworks/TDLibFramework.xcframework" ]; then
