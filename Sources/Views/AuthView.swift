@@ -117,6 +117,10 @@ public struct AuthView: View {
                                     viewModel.submitPhone()
                                 }
                             }
+                            
+                        default:
+                            ProgressView("Connecting to Telegram...")
+                                .foregroundColor(DesignTokens.primary)
                         }
                     }
                     .padding(DesignTokens.spacingL)
