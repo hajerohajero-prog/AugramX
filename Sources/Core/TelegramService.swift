@@ -158,9 +158,21 @@ public final class TelegramService: TelegramServiceProtocol {
     }
     
     public func initializeTDLib() {
-        let apiIdString = Bundle.main.object(forInfoDictionaryKey: "API_ID") as? String ?? ""
-        let apiHash = Bundle.main.object(forInfoDictionaryKey: "API_HASH") as? String ?? ""
-        let apiId = Int(apiIdString) ?? 0
+        var apiId: Int = 0
+        if let idInt = Bundle.main.object(forInfoDictionaryKey: "API_ID") as? Int {
+            apiId = idInt
+        } else if let idStr = Bundle.main.object(forInfoDictionaryKey: "API_ID") as? String, let parsed = Int(idStr.trimmingCharacters(in: .whitespacesAndNewlines)) {
+            apiId = parsed
+        }
+        
+        var apiHash = (Bundle.main.object(forInfoDictionaryKey: "API_HASH") as? String)?.trimmingCharacters(in: .whitespacesAndNewlines) ?? ""
+        
+        if apiId == 0 {
+            apiId = 39657451
+        }
+        if apiHash.isEmpty {
+            apiHash = "5ae054c81e95b258c17bac756c2f0b86"
+        }
         
         let paths = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)
         let tdlibFolder = paths[0].appendingPathComponent("tdlib", isDirectory: true)
