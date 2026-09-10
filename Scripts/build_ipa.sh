@@ -37,34 +37,26 @@ fi
 echo "Generating Xcode project using XcodeGen..."
 xcodegen generate
 
-# 5. Build Archive (Allows headless CI archive without requiring Apple Developer Team ID)
+# 5. Build Archive (Headless CI unsigned build)
 echo "Building archive..."
 xcodebuild clean archive \
     -project AugramX.xcodeproj \
     -scheme AugramX \
     -configuration Release \
     -archivePath build/AugramX.xcarchive \
-    -sdk iphoneos \
+    -destination 'generic/platform=iOS' \
     API_ID="$API_ID" \
     API_HASH="$API_HASH" \
     CODE_SIGNING_ALLOWED=NO \
     CODE_SIGNING_REQUIRED=NO \
-    CODE_SIGN_IDENTITY=""
+    CODE_SIGN_IDENTITY="" \
+    CODE_SIGN_STYLE="Manual"
 
-# 6. Export IPA
-echo "Exporting IPA..."
-mkdir -p build/ipa
-if xcodebuild -exportArchive \
-    -archivePath build/AugramX.xcarchive \
-    -exportOptionsPlist ExportOptions.plist \
-    -exportPath build/ipa; then
-    echo "=== BUILD SUCCESSFUL: Signed IPA available at build/ipa/AugramX.ipa ==="
-else
-    echo "=== Code signing credentials missing on CI. Packaging unsigned IPA payload ==="
-    mkdir -p build/ipa/Payload
-    cp -R build/AugramX.xcarchive/Products/Applications/AugramX.app build/ipa/Payload/
-    cd build/ipa
-    zip -r AugramX.ipa Payload
-    cd ../..
-    echo "=== BUILD SUCCESSFUL: Unsigned IPA artifact created at build/ipa/AugramX.ipa ==="
-fi
+# 6. Export IPA Artifact
+echo "Packaging IPA..."
+mkdir -p build/ipa/Payload
+cp -R build/AugramX.xcarchive/Products/Applications/AugramX.app build/ipa/Payload/
+cd build/ipa
+zip -r AugramX.ipa Payload
+cd ../..
+echo "=== BUILD SUCCESSFUL: IPA artifact created at build/ipa/AugramX.ipa ==="

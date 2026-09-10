@@ -18,8 +18,10 @@ settings:
     OTHER_SWIFT_FLAGS: "$(inherited)"
     FRAMEWORK_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
     LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
-    CODE_SIGN_STYLE: Automatic
-    DEVELOPMENT_TEAM: "" # Injected via CI or Xcode build settings
+    CODE_SIGNING_ALLOWED: NO
+    CODE_SIGNING_REQUIRED: NO
+    CODE_SIGN_IDENTITY: ""
+    DEVELOPMENT_TEAM: ""
   configs:
     Debug:
       API_ID: "123456"
@@ -41,12 +43,15 @@ targets:
       - target: Views
       - framework: Frameworks/TDLibFramework.xcframework
         embed: true
-        codeSignOnCopy: true
+        codeSignOnCopy: false
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: com.augramx.telegramclient
         ENABLE_BITCODE: NO
         OTHER_LDFLAGS: "$(inherited) -framework TDLibFramework"
+        CODE_SIGNING_ALLOWED: NO
+        CODE_SIGNING_REQUIRED: NO
+        CODE_SIGN_IDENTITY: ""
 
   Core:
     type: framework
