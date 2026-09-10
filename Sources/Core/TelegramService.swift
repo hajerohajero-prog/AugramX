@@ -39,6 +39,7 @@ public protocol TelegramServiceProtocol {
 public final class TelegramService: TelegramServiceProtocol {
     private let bridge: TDLibBridgeProtocol
     private let authStateSubject = CurrentValueSubject<TelegramAuthState, Never>(.idle)
+    private var isTdlibInitialized = false
     
     private let newMessagesSubject = PassthroughSubject<Message, Never>()
     private let chatUpdatesSubject = PassthroughSubject<Chat, Never>()
@@ -158,6 +159,9 @@ public final class TelegramService: TelegramServiceProtocol {
     }
     
     public func initializeTDLib() {
+        guard !isTdlibInitialized else { return }
+        isTdlibInitialized = true
+        
         var apiId: Int = 0
         if let idInt = Bundle.main.object(forInfoDictionaryKey: "API_ID") as? Int {
             apiId = idInt
