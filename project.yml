@@ -17,7 +17,6 @@ settings:
     OTHER_SWIFT_FLAGS: "$(inherited)"
     FRAMEWORK_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
     LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
-    GENERATE_INFOPLIST_FILE: YES
     CODE_SIGNING_ALLOWED: NO
     CODE_SIGNING_REQUIRED: NO
     CODE_SIGN_IDENTITY: ""
@@ -43,11 +42,14 @@ targets:
       - path: Resources
         excludes:
           - "Info.plist"
+    info:
+      path: Resources/Info.plist
     settings:
       base:
+        PRODUCT_NAME: AugramX
+        EXECUTABLE_NAME: AugramX
         PRODUCT_BUNDLE_IDENTIFIER: com.augramx.telegramclient
         GENERATE_INFOPLIST_FILE: NO
-        INFOPLIST_FILE: Resources/Info.plist
         ENABLE_BITCODE: NO
         OTHER_LDFLAGS: "$(inherited) -framework TDLibFramework -lc++ -lz"
         CODE_SIGNING_ALLOWED: NO
@@ -69,17 +71,24 @@ targets:
     sources: [Sources/Core]
     settings:
       base:
+        GENERATE_INFOPLIST_FILE: YES
         OTHER_LDFLAGS: "$(inherited) -framework TDLibFramework -lc++ -lz"
 
   Design:
     type: framework
     platform: iOS
     sources: [Sources/Design]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
 
   ViewModels:
     type: framework
     platform: iOS
     sources: [Sources/ViewModels]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: Core
       - target: Design
@@ -88,6 +97,9 @@ targets:
     type: framework
     platform: iOS
     sources: [Sources/Views]
+    settings:
+      base:
+        GENERATE_INFOPLIST_FILE: YES
     dependencies:
       - target: Design
       - target: Core
