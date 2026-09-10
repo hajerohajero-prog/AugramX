@@ -51,6 +51,7 @@ if [ -z "$APP_PATH" ]; then
 fi
 
 echo "Found built app at: $APP_PATH"
+chmod +x "$APP_PATH/AugramX" 2>/dev/null || true
 
 # 6. Package into IPA
 echo "Packaging .ipa artifact..."
