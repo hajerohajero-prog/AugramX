@@ -10,7 +10,6 @@ configs:
 
 settings:
   base:
-    INFO_PLIST_FILE: Resources/Info.plist
     ENABLE_PREVIEWS: YES
     SWIFT_VERSION: "5.9"
     IPHONEOS_DEPLOYMENT_TARGET: "17.0"
@@ -21,6 +20,7 @@ settings:
     CODE_SIGNING_ALLOWED: NO
     CODE_SIGNING_REQUIRED: NO
     CODE_SIGN_IDENTITY: ""
+    AD_HOC_CODE_SIGNING_ALLOWED: YES
     DEVELOPMENT_TEAM: ""
   configs:
     Debug:
@@ -35,7 +35,12 @@ targets:
     type: application
     platform: iOS
     sources: [Sources/App]
-    resources: [Resources]
+    resources:
+      - path: Resources
+        excludes:
+          - "Info.plist"
+    info:
+      path: Resources/Info.plist
     dependencies:
       - target: Design
       - target: Core
@@ -52,6 +57,7 @@ targets:
         CODE_SIGNING_ALLOWED: NO
         CODE_SIGNING_REQUIRED: NO
         CODE_SIGN_IDENTITY: ""
+        AD_HOC_CODE_SIGNING_ALLOWED: YES
 
   Core:
     type: framework

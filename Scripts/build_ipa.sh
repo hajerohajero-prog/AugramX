@@ -26,7 +26,7 @@ fi
 echo "Generating Xcode project using XcodeGen..."
 xcodegen generate
 
-# 4. Clean and Build App for iOS (Unsigned headless CI build)
+# 4. Clean and Build App for iOS (Ad-hoc signed for CI)
 echo "Building iOS App Binary..."
 xcodebuild clean build \
     -project AugramX.xcodeproj \
@@ -36,9 +36,10 @@ xcodebuild clean build \
     -derivedDataPath build/DerivedData \
     API_ID="$API_ID" \
     API_HASH="$API_HASH" \
-    CODE_SIGNING_ALLOWED=NO \
+    CODE_SIGN_IDENTITY="-" \
     CODE_SIGNING_REQUIRED=NO \
-    CODE_SIGN_IDENTITY="" \
+    CODE_SIGNING_ALLOWED=YES \
+    AD_HOC_CODE_SIGNING_ALLOWED=YES \
     CODE_SIGN_STYLE="Manual"
 
 # 5. Locate built .app bundle
