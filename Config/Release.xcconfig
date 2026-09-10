@@ -1,0 +1,5 @@
+// Release.xcconfig
+// Production build: API credentials must be supplied via environment variables or CI secret store.
+// Do NOT commit real values.
+API_ID = $(API_ID)
+API_HASH = $(API_HASH)

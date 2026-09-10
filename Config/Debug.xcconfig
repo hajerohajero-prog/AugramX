@@ -1,0 +1,4 @@
+// Debug.xcconfig
+// Placeholder API credentials for development builds. DO NOT commit real values.
+API_ID = 123456
+API_HASH = "YOUR_HASH"

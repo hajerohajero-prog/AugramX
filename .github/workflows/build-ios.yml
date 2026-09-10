@@ -1,0 +1,49 @@
+name: Build AugramX iOS (.ipa)
+
+on:
+  push:
+    branches: [ main, master ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Install XcodeGen
+        run: brew install xcodegen
+
+      - name: Check & Setup TDLib Framework
+        run: |
+          mkdir -p Frameworks
+          if [ -n "${{ secrets.TDLIB_XCFRAMEWORK_URL }}" ]; then
+            echo "Downloading TDLib XCFramework from secret URL..."
+            curl -L "${{ secrets.TDLIB_XCFRAMEWORK_URL }}" -o tdlib.zip
+            unzip -q tdlib.zip -d Frameworks/
+          fi
+          
+          if [ ! -d "Frameworks/TDLibFramework.xcframework" ]; then
+            echo "FATAL: Frameworks/TDLibFramework.xcframework not found."
+            echo "Provide TDLibFramework.xcframework in the repository or configure TDLIB_XCFRAMEWORK_URL secret."
+            exit 1
+          fi
+
+      - name: Generate Xcode Project
+        run: xcodegen generate
+
+      - name: Build & Archive iOS App
+        env:
+          API_ID: ${{ secrets.TELEGRAM_API_ID }}
+          API_HASH: ${{ secrets.TELEGRAM_API_HASH }}
+        run: |
+          chmod +x Scripts/build_ipa.sh
+          ./Scripts/build_ipa.sh
+
+      - name: Upload IPA Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: AugramX-iOS-IPA
+          path: build/ipa/*.ipa

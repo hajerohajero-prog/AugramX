@@ -1,0 +1,16 @@
+# Visual Studio temp files
+.vs/
+*.user
+*.suo
+
+# macOS / Xcode generated files
+.DS_Store
+*.xcodeproj/
+*.xcworkspace/
+build/
+DerivedData/
+*.ipa
+*.xcarchive
+
+# Frameworks build artifacts
+Frameworks/tdlib.zip

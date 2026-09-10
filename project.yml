@@ -1,0 +1,86 @@
+name: AugramX
+options:
+  bundleIdPrefix: com.augramx
+  deploymentTarget:
+    iOS: "17.0"
+  xcodeVersion: "15.0"
+configs:
+  Debug: debug
+  Release: release
+
+settings:
+  base:
+    INFO_PLIST_FILE: Resources/Info.plist
+    ENABLE_PREVIEWS: YES
+    SWIFT_VERSION: "5.9"
+    IPHONEOS_DEPLOYMENT_TARGET: "17.0"
+    TARGETED_DEVICE_FAMILY: "1"
+    OTHER_SWIFT_FLAGS: "$(inherited)"
+    FRAMEWORK_SEARCH_PATHS: "$(inherited) $(PROJECT_DIR)/Frameworks"
+    LD_RUNPATH_SEARCH_PATHS: "$(inherited) @executable_path/Frameworks"
+    CODE_SIGN_STYLE: Automatic
+    DEVELOPMENT_TEAM: "" # Injected via CI or Xcode build settings
+  configs:
+    Debug:
+      API_ID: "123456"
+      API_HASH: "debug_hash_placeholder"
+    Release:
+      API_ID: "$(API_ID)"
+      API_HASH: "$(API_HASH)"
+
+targets:
+  AugramX:
+    type: application
+    platform: iOS
+    sources: [Sources/App]
+    resources: [Resources]
+    dependencies:
+      - target: Design
+      - target: Core
+      - target: ViewModels
+      - target: Views
+      - framework: Frameworks/TDLibFramework.xcframework
+        embed: true
+        codeSignOnCopy: true
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: com.augramx.telegramclient
+        ENABLE_BITCODE: NO
+        OTHER_LDFLAGS: "$(inherited) -framework TDLibFramework"
+
+  Core:
+    type: framework
+    platform: iOS
+    sources: [Sources/Core]
+
+  Design:
+    type: framework
+    platform: iOS
+    sources: [Sources/Design]
+
+  ViewModels:
+    type: framework
+    platform: iOS
+    sources: [Sources/ViewModels]
+    dependencies:
+      - target: Core
+      - target: Design
+
+  Views:
+    type: framework
+    platform: iOS
+    sources: [Sources/Views]
+    dependencies:
+      - target: Design
+      - target: Core
+      - target: ViewModels
+
+preBuildScripts:
+  - name: Check TDLib XCFramework
+    script: |
+      #!/bin/bash
+      if [ ! -d "${PROJECT_DIR}/Frameworks/TDLibFramework.xcframework" ]; then
+        echo "error: TDLibFramework.xcframework is missing in ${PROJECT_DIR}/Frameworks/."
+        echo "Please place TDLibFramework.xcframework in Frameworks/ or set TDLIB_XCFRAMEWORK_PATH before building."
+        exit 1
+      fi
